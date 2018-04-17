@@ -96,7 +96,7 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.postgresql',
     #     'NAME': 'lmnop',
     #     'USER': 'postgres',
-    #     'PASSWORD': os.environ['LMNOP_DB_PW'],
+    #     'PASSWORD': sqlAdmin1234!,
     #     'HOST': 'localhost',
     #     'PORT': '5432',
     # }
