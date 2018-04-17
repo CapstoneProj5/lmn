@@ -2,24 +2,23 @@
 
 {% block content %}
 
-<H2>Account Information</H2>
+    <h2>Account Information</h2>
 
-{#***Julie's code#}
-{% if user.userinfo.user_photo %}
-    <img src="{% url 'lmn:user_profile_photo' user_pk=user.pk %}" />
-{% endif %}
-{#***#}
+    {#***Julie's code#}
+    {% if user.userinfo.user_photo %}
+        <img src="{% url 'lmn:user_profile_photo' user_pk=user.pk %}" />
+    {% endif %}
+    {#***#}
 
-{% if message %}
-  <P>{{ message }}</p>
-{% endif %}
-{#***Julie's code#}
-<form method='post' enctype="multipart/form-data" action="">{% csrf_token %}
-{#***#}
-  <table id="my_profile_form">
-    {{ form.as_table}}
-  </table>
-  <button type='submit'>Apply Changes</button>
-</form>
+    {% if message %}
+      <p>{{ message }}</p>
+    {% endif %}
+
+    {#***Julie's code#}
+    <form method='post' enctype="multipart/form-data" action="">{% csrf_token %}
+    {#***#}
+      <table id="my_profile_form">{{ form.as_table}}</table>
+      <button type='submit'>Apply Changes</button>
+    </form>
 
 {% endblock %}

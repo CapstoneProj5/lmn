@@ -14,6 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 import datetime
+from logging import Logger
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
 from django.conf.urls import url, include
@@ -25,6 +27,8 @@ from requests import get
 
 from lmn import views_users
 from lmn.models import Artist, Show, Venue
+
+log = Logger
 
 urlpatterns = [
 
@@ -38,6 +42,7 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
@@ -50,22 +55,33 @@ EVERYTHING BELOW HERE IS FOR THE SCHEDULER THAT AUTO-UPDATES THE DATABASE
 
 
 def update_db_from_api() -> None:
+
     update_data = get("https://lmn-api.herokuapp.com/events").json()  # Address of the LMNFlask api
     fetch_shows(update_data)
 
+def start_scheduler():
 
-scheduler = BackgroundScheduler()
-# scheduler.add_job(update_db_from_api, trigger='interval', seconds=15)  # Time between calls to api
-scheduler.add_job(update_db_from_api, trigger='cron', day='*', hour=0, minute=0, second=0, timezone='US/Central')  # will run update_db_from_api every night @ midnight
-register_events(scheduler)
-scheduler.start()
+    # scheduler.add_job(update_db_from_api, trigger='interval', seconds=15)  # Time between calls to api
+
+    scheduler = BackgroundScheduler()
+
+    scheduler.add_job(update_db_from_api,
+                      trigger='cron',
+                      day='*',
+                      hour=0,
+                      minute=0,
+                      second=0,
+                      timezone='US/Central')   # runs @ nightly @ midnight
+
+    register_events(scheduler)
+    scheduler.start()
 
 
 def fetch_shows(response_data: dict) -> None:
 
     for show_data in response_data:
 
-        print(show_data)
+        log(show_data)
 
         new_artist = None
         new_venue = None
@@ -78,19 +94,22 @@ def fetch_shows(response_data: dict) -> None:
             new_artist = build_artist(show_data)
             add_artist_if_not_exists(show_data, new_artist)
 
-        if new_artist is not None and new_venue is not None:
+        if new_artist is not None \
+                and new_venue is not None:
             new_show = build_show(show_data)
             add_show_if_not_exists(show_data, new_show)
 
 
 def verify_venue_data(show: dict) -> bool:
 
-    return show['venue_id'] is not None and show['venue'] != 'Unknown venue'
+    return show['venue_id'] is not None \
+           and show['venue'] != 'Unknown venue'
 
 
 def verify_artist_data(show: dict) -> bool:
 
-    return show['artist_id'] is not None and show['artist'] != 'Unknown artist'
+    return show['artist_id'] is not None \
+           and show['artist'] != 'Unknown artist'
 
 
 def build_artist(show: dict) -> Artist:
@@ -157,3 +176,6 @@ def clean_show_attributes(show: dict) -> dict:
         show_date = dt
 
     return {'artist': artist, 'venue': venue, 'show_date': show_date}
+
+
+start_scheduler()

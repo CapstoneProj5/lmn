@@ -1,6 +1,6 @@
 from django.conf.urls import url
-from . import views, views_artists, views_venues, views_notes, views_users
 
+from . import views, views_artists, views_venues, views_notes, views_users
 
 app_name = 'lmn'
 

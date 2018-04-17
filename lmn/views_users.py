@@ -70,11 +70,11 @@ def my_user_profile(request):
 
             user.userinfo.about_me = about_me
             if hasattr(photo, 'content_type') and photo.content_type is not None:
-# ***Julie wrote this code.
+                # ***Julie wrote this code.
                 user.userinfo.user_photo_type = photo.content_type
                 user.userinfo.user_photo_name = photo.name
                 user.userinfo.user_photo = photo.read()
-# ***
+                # ***
 
             user.save()
             user.userinfo.save()

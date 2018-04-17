@@ -18,8 +18,7 @@
     <h2 id="note_page_title">
         {{ note.show.artist.name }} at {{ note.show.venue.name }} by
         <a href="{% url 'lmn:user_profile' user_pk=note.user.pk %}">
-            {{ user.username }}
-        </a>
+            {{ user.username }}</a>
     </h2>
 
     <p id="note_title"> <b>{{ note.title}}</b> </p>
@@ -63,9 +62,7 @@
 
         <div class="reddit-share-button col-*-4">
             <a href="//www.reddit.com/submit"
-               onclick="window.location =
-               '//www.reddit.com/submit?url=' +
-               encodeURIComponent(window.location);
+               onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent(window.location);
                return false">
                 <img src="//www.redditstatic.com/spreddit7.gif"
                      alt="submit to reddit"

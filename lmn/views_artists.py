@@ -8,8 +8,14 @@ from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
-def venues_for_artist(request, artist_pk):   # pk = artist_pk
-    """ Get all of the venues where this artist has played a show """
+def venues_for_artist(request, artist_pk):
+
+    '''
+    Get all of the venues where this artist has played a show
+    :param request:
+    :param artist_pk:
+    :return:
+    '''
 
     shows = Show.objects.filter(artist=artist_pk).order_by('show_date').reverse()
     artist = Artist.objects.get(pk=artist_pk)
@@ -26,14 +32,14 @@ def venues_for_artist(request, artist_pk):   # pk = artist_pk
     except EmptyPage:
         showset = paginator.page(paginator.num_pages)
 
-    return render(request,
-                  'lmn/venues/venue_list_for_artist.html',
-                  {'artist': artist,
-                   'shows': shows,
-                   'showset': showset})
+    render_page = 'lmn/venues/venue_list_for_artist.html'
+    data_dict = {'artist': artist, 'shows': shows, 'showset': showset}
+
+    return render(request, render_page, data_dict)
 
 
 def artist_list(request):
+
     form = ArtistSearchForm()
     search_name = request.GET.get('search_name')
 
@@ -55,16 +61,16 @@ def artist_list(request):
     except EmptyPage:
         artistset = paginator.page(paginator.num_pages)
 
-    return render(request,
-                  'lmn/artists/artist_list.html',
-                  {'artists': artists,
-                   'form': form,
-                   'search_term': search_name,
-                   'artistset': artistset})
+    render_page = 'lmn/artists/artist_list.html'
+    data_dict = {'artists': artists, 'form': form, 'search_term': search_name, 'artistset': artistset}
+
+    return render(request, render_page, data_dict)
 
 
 def artist_detail(request, artist_pk):
+
     artist = get_object_or_404(Artist, pk=artist_pk)
-    return render(request,
-                  'lmn/artists/artist_detail.html',
-                  {'artist': artist})
+    render_page = 'lmn/artists/artist_detail.html'
+    data_dict = {'artist': artist}
+
+    return render(request, render_page, data_dict)

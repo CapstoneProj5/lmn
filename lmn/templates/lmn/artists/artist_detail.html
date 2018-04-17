@@ -2,8 +2,14 @@
 
 {% block content %}
 
-<h2 id='artist_detail_title'>Artist Detail</h2>
-<p id='artist_name'>{{ artist.name }}</p>
-    <img src="{{ artist.picture.url }}" width="500">
+    <h2 id='artist_detail_title'>Artist Detail</h2>
+
+    <p id='artist_name'>{{ artist.name }}</p>
+
+    {% if artist.picture %}
+        {% if artist.picture.url %}
+            <img src="{{ artist.picture.url }}" width="500">
+        {% endif %}
+    {% endif %}
 
 {% endblock %}

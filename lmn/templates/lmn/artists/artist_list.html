@@ -1,50 +1,55 @@
 {% extends 'lmn/base.html' %}
 
 {% block content %}
-<div>
 
-<h2>Artist List</h2>
+    <div>
 
-<P>Artist Search</p>
-  <form action="{% url 'lmn:artist_list' %}">
-    {{ form }}
-    <input type='submit' value='Search'>
-  </form>
+        <h2>Artist List</h2>
 
+        <p>Artist Search</p>
 
-{% if search_term %}
-  <h2 id='artist_list_title'>Artists matching '{{ search_term }}' <a href="{% url 'lmn:artist_list' %}" id='clear_search'>(clear)</a></h2>
-{% else %}
-  <h2 id='artist_list_title'>All artists</h2>
-{% endif %}
+        <form action="{% url 'lmn:artist_list' %}">
+            {{ form }}
+            <input type='submit' value='Search'>
+        </form>
 
-{% for artist in artistset %}
+        {% if search_term %}
+          <h2 id='artist_list_title'>
+              Artists matching '{{ search_term }}'
+              <a href="{% url 'lmn:artist_list' %}" id='clear_search'>(clear)</a></h2>
+        {% else %}
+          <h2 id='artist_list_title'>
+              All artists</h2>
+        {% endif %}
 
-<div class="artist" id="artist_{{ artist.pk }}">
-<P><a href="{% url 'lmn:artist_detail' artist_pk=artist.pk %}">{{ artist.name }}</a></p>
-  <p>See venues played, notes, and add your own <a href="{% url 'lmn:venues_for_artist' artist_pk=artist.pk %}">{{ artist.name }} notes</a>
-</div>
+        {% for artist in artistset %}
+            <div class="artist" id="artist_{{ artist.pk }}">
+                <p><a href="{% url 'lmn:artist_detail' artist_pk=artist.pk %}">{{ artist.name }}</a></p>
+                <p>See venues played, notes, and add your own
+                    <a href="{% url 'lmn:venues_for_artist' artist_pk=artist.pk %}">{{ artist.name }} notes</a></p>
+            </div>
+        {% empty %}
+            <p>No artists found</p>
+        {% endfor %}
 
-{% empty %}
-    <P>No artists found</P>
-{% endfor %}
+        <div class="pagination">
+            <span class="step-links">
 
-    <div class="pagination">
-        <span class="step-links">
+                {% if artistset.has_previous %}
+                    <a href="?page={{ artistset.previous_page_number }}">previous</a>
+                {% endif %}
 
-            {% if artistset.has_previous %}
-                <a href="?page={{ artistset.previous_page_number }}">previous</a>
-            {% endif %}
+                <span class="current">
+                    page {{ artistset.number }} of {{ artistset.paginator.num_pages }}.
+                </span>
 
-            <span class="current">
-                page {{ artistset.number }} of {{ artistset.paginator.num_pages }}.
+                {% if artistset.has_next %}
+                    <a href="?page={{ artistset.next_page_number }}">next</a>
+                {% endif %}
+
             </span>
+        </div>
 
-            {% if artistset.has_next %}
-                <a href="?page={{ artistset.next_page_number }}">next</a>
-            {% endif %}
-
-        </span>
     </div>
-</div>
+
 {% endblock %}

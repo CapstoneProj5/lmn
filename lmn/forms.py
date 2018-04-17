@@ -14,22 +14,31 @@ class ArtistSearchForm(forms.Form):
 
 
 class NewNoteForm(forms.ModelForm):
+
     class Meta:
+
         model = Note
+
         fields = ('title', 'picture', 'text')  # Fields for the new note form
 
     # Checks picture size
     def clean_picture(self):
+
         picture = self.cleaned_data['picture']
+
         kb_limit = 1024 * 1024  # 1 MB
+
         if picture:
             if picture.size > kb_limit:
                 raise ValidationError("Image file is too large ( > 1mb)")  # Picture size limit
+
         return picture
 
     # Checks title validation
     def clean_title(self):
+
         title = self.cleaned_data['title']
+
         if not title:
             raise ValidationError('Please enter a title for your note!')
 
@@ -37,7 +46,9 @@ class NewNoteForm(forms.ModelForm):
 
     # Checks that there is input in txt
     def clean_text(self):
+
         text = self.cleaned_data['text']
+
         if not text:
             raise ValidationError('Please enter a few lines about your experience!')
 
@@ -57,6 +68,7 @@ class UserEditForm(forms.Form):
 class UserRegistrationForm(UserCreationForm):
 
     class Meta:
+
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
 
@@ -73,21 +85,27 @@ class UserRegistrationForm(UserCreationForm):
         return username
 
     def clean_first_name(self):
+
         first_name = self.cleaned_data['first_name']
+
         if not first_name:
             raise ValidationError('Please enter your first name')
 
         return first_name
 
     def clean_last_name(self):
+
         last_name = self.cleaned_data['last_name']
+
         if not last_name:
             raise ValidationError('Please enter your last name')
 
         return last_name
 
     def clean_email(self):
+
         email = self.cleaned_data['email']
+
         if not email:
             raise ValidationError('Please enter an email address')
 
@@ -97,6 +115,7 @@ class UserRegistrationForm(UserCreationForm):
         return email
 
     def save(self, commit=True):
+
         user = super(UserRegistrationForm, self).save(commit=False)
         user.username = self.cleaned_data['username']
         user.email = self.cleaned_data['email']
