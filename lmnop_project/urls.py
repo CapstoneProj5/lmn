@@ -80,7 +80,7 @@ def start_scheduler():
 def fetch_shows(response_data: dict) -> None:
 
     for show_data in response_data:
-
+#content
         log(show_data)
 
         new_artist = None
