@@ -11,8 +11,12 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import dj_database_url
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -87,16 +91,18 @@ WSGI_APPLICATION = 'lmnop_project.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'lmnop',
-        'USER': 'postgres',
-        'PASSWORD': os.environ['LMNOP_DB_PW'],
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config()
+    #     {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'lmnop',
+    #     'USER': 'postgres',
+    #     'PASSWORD': os.environ['LMNOP_DB_PW'],
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
 }
 
+# export DATABASE_URL= "postgres://postgres:sqlAdmin1234!@0.0.0.0:5000"
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -145,3 +151,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Should provide the user object.
 LOGIN_REDIRECT_URL = 'lmn:my_user_profile'
 LOGOUT_REDIRECT_URL = 'lmn:logged_out'
+
