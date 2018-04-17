@@ -77,7 +77,7 @@ class Note(models.Model):
     posted_date = models.DateTimeField(blank=False)
 
     def publish(self):
-        posted_date = datetime.datetime.today()
+        self.posted_date = datetime.datetime.today()
         self.save()
 
     def __str__(self):

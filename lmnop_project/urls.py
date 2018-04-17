@@ -13,17 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
+from django.conf import settings
 from django.conf.urls import url, include
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.views.generic.edit import CreateView
-from lmn import views, views_users
-from django.conf import settings
-from django.conf.urls.static import static
+from django_apscheduler.jobstores import register_events
+from requests import get
 
+from lmn import views_users
+from lmn.models import Artist, Show, Venue
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),    #Admin site
+
+    url(r'^admin/', admin.site.urls),  # Admin site
 
     url(r'^accounts/login/$', auth_views.login, name='login'),
     url(r'^accounts/logout/$', auth_views.logout, name='logout'),
@@ -36,3 +41,119 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
+
+'''
+=========================================================================
+EVERYTHING BELOW HERE IS FOR THE SCHEDULER THAT AUTO-UPDATES THE DATABASE
+=========================================================================
+'''
+
+
+def update_db_from_api() -> None:
+    update_data = get("https://lmn-api.herokuapp.com/events").json()  # Address of the LMNFlask api
+    fetch_shows(update_data)
+
+
+scheduler = BackgroundScheduler()
+# scheduler.add_job(update_db_from_api, trigger='interval', seconds=15)  # Time between calls to api
+scheduler.add_job(update_db_from_api, trigger='cron', day='*', hour=0, minute=0, second=0, timezone='US/Central')  # will run update_db_from_api every night @ midnight
+register_events(scheduler)
+scheduler.start()
+
+
+def fetch_shows(response_data: dict) -> None:
+
+    for show_data in response_data:
+
+        print(show_data)
+
+        new_artist = None
+        new_venue = None
+
+        if verify_venue_data(show_data):
+            new_venue = build_venue(show_data)
+            add_venue_if_not_exists(show_data, new_venue)
+
+        if verify_artist_data(show_data):
+            new_artist = build_artist(show_data)
+            add_artist_if_not_exists(show_data, new_artist)
+
+        if new_artist is not None and new_venue is not None:
+            new_show = build_show(show_data)
+            add_show_if_not_exists(show_data, new_show)
+
+
+def verify_venue_data(show: dict) -> bool:
+
+    return show['venue_id'] is not None and show['venue'] != 'Unknown venue'
+
+
+def verify_artist_data(show: dict) -> bool:
+
+    return show['artist_id'] is not None and show['artist'] != 'Unknown artist'
+
+
+def build_artist(show: dict) -> Artist:
+
+    new_artist = Artist(sk_id=show['artist_id'],
+                        pkey=0,
+                        name=show['artist'])
+    return new_artist
+
+
+def build_venue(show: dict) -> Venue:
+
+    new_venue = Venue(sk_id=show['venue_id'],
+                      pkey=0,
+                      name=show['venue'],
+                      city=show['city'],
+                      state=show['state'])
+    return new_venue
+
+
+def build_show(show: dict) -> Show:
+
+    attr = clean_show_attributes(show)
+
+    new_show = Show(pkey=0,
+                    sk_id=show['sk_id'],
+                    show_date=attr['show_date'],
+                    artist=attr['artist'],
+                    venue=attr['venue'])
+    return new_show
+
+
+def add_artist_if_not_exists(show: dict, new_artist: Artist) -> None:
+
+    if not Artist.objects.filter(sk_id=show['artist_id']).exists():
+        new_artist.save()
+
+
+def add_venue_if_not_exists(show: dict, new_venue: Venue) -> None:
+
+    if not Venue.objects.filter(sk_id=show['venue_id']).exists():
+        new_venue.save()
+
+
+def add_show_if_not_exists(show: dict, new_show: Show) -> None:
+
+    if not Show.objects.filter(sk_id=show['sk_id']).exists():
+        new_show.save()
+
+
+def clean_show_attributes(show: dict) -> dict:
+
+    artist_id = show['artist_id']
+    venue_id = show['venue_id']
+
+    artist = Artist.objects.get(sk_id=artist_id)
+    venue = Venue.objects.get(sk_id=venue_id)
+
+    show_date = show['date']
+
+    if show_date is None:
+        utc_dt = datetime.datetime.now(datetime.timezone.utc)
+        dt = utc_dt.astimezone()
+        show_date = dt
+
+    return {'artist': artist, 'venue': venue, 'show_date': show_date}

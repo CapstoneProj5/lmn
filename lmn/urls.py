@@ -30,7 +30,7 @@ urlpatterns = [
 
     # User related
     url(r'^user/profile/(?P<user_pk>\d+)/$', views_users.user_profile, name='user_profile'),
-# Julie add photo url
+    # Julie add photo url
     url(r'^user/profile/(?P<user_pk>\d+)/photo$', views_users.user_profile_photo, name='user_profile_photo'),
     url(r'^user/profile/$', views_users.my_user_profile, name='my_user_profile'),
 
