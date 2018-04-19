@@ -1,2 +1,2 @@
 
-web: python manage.py
+web: gunicorn manage.wsgi
