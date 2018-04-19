@@ -1,2 +1,2 @@
 
-web: gunicorn manage.wsgi
+web: gunicorn lmnop_project/wsgi.py
