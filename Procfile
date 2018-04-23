@@ -1,2 +1,2 @@
 
-web: gunicorn lmn-web/lmnop_project/wsgi.py:application
+web: gunicorn lmn-web/manage.py
