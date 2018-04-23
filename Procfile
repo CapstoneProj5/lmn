@@ -1,2 +1,2 @@
 
-web: gunicorn lmn-web/manage.py
+web: gunicorn lmn/manage.py
