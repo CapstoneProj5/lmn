@@ -1,2 +1,2 @@
 
-web: gunicorn lmnop_project.manage
+web: gunicorn manage
