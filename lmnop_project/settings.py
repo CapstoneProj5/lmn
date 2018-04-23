@@ -91,20 +91,21 @@ WSGI_APPLICATION = 'lmnop_project.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'lmnop',
-        'USER': 'postgres',
-        'PASSWORD': 'sqlAdmin1234!',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'lmnop',
+#         'USER': 'postgres',
+#         'PASSWORD': 'sqlAdmin1234!',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+#
+# db_from_env = dj_database_url.config(conn_max_age=500)
+# DATABASES['default'].update(db_from_env)
+    'default': dj_database_url.config()
+
 }
-
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
-    # 'default': dj_database_url.config()
-
 
 
 # export DATABASE_URL= "postgres://postgres:sqlAdmin1234!@0.0.0.0:5000"
@@ -125,7 +126,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
-]
+    ]
 
 
 # Internationalization
